@@ -74,6 +74,12 @@ export type OptionsData = {
    * A boolean to optionally enable GraphiQL mode.
    */
   graphiql?: ?boolean,
+
+  /**
+   * An optional function applied to each response before returning data to
+   * clients.
+   */
+  formatResponse?: ?Function,
 };
 
 type Middleware = (request: Request, response: Response) => Promise<void>;
@@ -101,6 +107,7 @@ export default function graphqlHTTP(options: Options): Middleware {
     let variables;
     let operationName;
     let validationRules;
+    let formatResponseFn;
 
     // Promises are used as a mechanism for capturing any thrown errors during
     // the asynchronous process below.
@@ -135,6 +142,7 @@ export default function graphqlHTTP(options: Options): Middleware {
       pretty = optionsData.pretty;
       graphiql = optionsData.graphiql;
       formatErrorFn = optionsData.formatError;
+      formatResponseFn = optionsData.formatResponse;
 
       validationRules = specifiedRules;
       if (optionsData.validationRules) {
@@ -234,6 +242,7 @@ export default function graphqlHTTP(options: Options): Middleware {
       if (result && result.errors) {
         result.errors = result.errors.map(formatErrorFn || formatError);
       }
+      if (formatResponseFn) { formatResponseFn(result, response); }
       // If allowed to show GraphiQL, present it instead of JSON.
       if (showGraphiQL) {
         const data = renderGraphiQL({
