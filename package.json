@@ -1,5 +1,5 @@
 {
-  "name": "express-graphql",
+  "name": "@postalservice14/express-graphql",
   "version": "0.5.4",
   "description": "Production ready GraphQL HTTP middleware.",
   "contributors": [
